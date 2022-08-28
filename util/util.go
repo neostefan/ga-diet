@@ -18,3 +18,12 @@ func GetRandomIngredientId(l int) (Id int) {
 
 	return id
 }
+
+
+//Generating random probabilties for crossover
+func GetRandomProbabilty() (prob float64) {
+	seed := rand.NewSource(time.Now().UnixNano())
+	rg := rand.New(seed)
+	pb := rg.Float64()
+	return pb
+}

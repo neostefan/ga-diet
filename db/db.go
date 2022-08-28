@@ -98,6 +98,98 @@ func InsertIngredient(db *sql.DB, i *definitions.IngredientDetails) {
 	defer stmt.Close()
 }
 
+func GetCaloriesAndCost(db *sql.DB, c definitions.Chromosome) definitions.Objectives {
+	calcost := make(map[string]float64)
+	calories := make([]float64, 0)
+	prices := make([]float64, 0)
+	var calorie float64
+	var price float64
+	sumCalories := 0.0
+	sumCost := 0.0
+	
+	for i, id := range c {
+		if i == int(definitions.CARBS) {
+			errE := db.QueryRow(`SELECT calories, cost FROM carbs WHERE id = ?`, id).Scan(&calorie, &price)
+
+			
+			if errE != nil {
+				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
+			}
+
+			calories = append(calories, calorie)
+			prices = append(prices, price)
+		} 
+
+		if i == int(definitions.PROTEINS) {
+			errE := db.QueryRow(`SELECT calories, cost FROM proteins WHERE id = ?`, id).Scan(&calorie, &price)
+
+			if errE != nil {
+				
+				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
+			}
+
+			calories = append(calories, calorie)
+			prices = append(prices, price)
+		}
+
+		if i == int(definitions.OILS) {
+			errE := db.QueryRow(`SELECT calories, cost FROM oils WHERE id = ?`, id).Scan(&calorie, &price)
+
+			if errE != nil {
+				fmt.Println(id)
+				fmt.Println(GetMaxId(db, definitions.OILS))
+				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.BEVERAGES, errE)
+			}
+
+			calories = append(calories, calorie)
+			prices = append(prices, price)
+		}
+		
+		if i == int(definitions.VEGETABLES) {
+			errE := db.QueryRow(`SELECT calories, cost FROM vegetables WHERE id = ?`, id).Scan(&calorie, &price)
+
+			if errE != nil {
+				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.VEGETABLES, errE)
+			}
+
+			calories = append(calories, calorie)
+			prices = append(prices, price)
+		}
+		
+		if i == int(definitions.BEVERAGES) {
+			errE := db.QueryRow(`SELECT calories, cost FROM beverages WHERE id = ?`, id).Scan(&calorie, &price)
+
+			if errE != nil {
+				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.FRUITS, errE)
+			}
+
+			calories = append(calories, calorie)
+			prices = append(prices, price)
+		}
+		
+		if i == int(definitions.FRUITS) {
+			errE := db.QueryRow(`SELECT calories, cost FROM fruits WHERE id = ?`, id).Scan(&calorie, &price)
+
+			if errE != nil {
+				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.OILS, errE)
+			}
+
+			calories = append(calories, calorie)
+			prices = append(prices, price)
+		}
+	}
+
+	for i := 0; i < len(c); i++ {
+		sumCalories = sumCalories + calories[i]
+		sumCost = sumCost + prices[i]
+	}
+
+	calcost["calories"] = sumCalories
+	calcost["prices"] = sumCost
+
+	return calcost
+}
+
 func ShiftToDb(i definitions.Ingredients, db *sql.DB) {
 	for _, v := range i {
 		for _, m := range v {

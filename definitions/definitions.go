@@ -1,27 +1,55 @@
 package definitions
 
-type IngredientType string
-type OperationType int
+type IngredientType int32
+
+type Objectives map[string]float64
+
+// type SelectionMap map[Chromosome]Objectives
+type SelectionMap map[int]Objectives
+
+// type ParetoFront map[int]Generation
+
+type ParetoFront map[int][]int
+
+type Aim int32
+
+type AimObjectiveMap map[Aim]string
+
+type ChromosomeCache struct {
+	Chromosome Chromosome
+	Objectives Objectives
+}
+
+const (
+	CALORIES = "calories"
+	PROTEIN = "protein"
+	PRICE = "prices"
+)
+
+const (
+	MAX Aim = iota
+	MIN
+)
 
 const (
 	ChromosomeSize = 6
-	PopulationSize = 50
+	PopulationSize = 3
 	GenerationSize = 200
 )
 
 const (
-	CARBS IngredientType = "carbs"
-	PROTEINS IngredientType = "proteins"
-	VEGETABLES IngredientType = "vegetables"
-	OILS IngredientType = "oils"
-	FRUITS IngredientType = "fruits"
-	BEVERAGES IngredientType = "beverages"
+	CARBS IngredientType = iota
+	PROTEINS
+	OILS
+	VEGETABLES
+	BEVERAGES
+	FRUITS
 )
 
-const (
-	Mutation OperationType = iota
-	Crossover 
-)
+// const (
+// 	Mutation OperationType = iota
+// 	Crossover 
+// )
 
 type HealthyPlateContent int
 type IngredientDetails struct {
@@ -43,22 +71,9 @@ type Ingredient map[string]*IngredientDetails
 type Ingredients []Ingredient
 
 //swap function swap the chromosome with it's partner based on the index specified
-func (c *Chromosome) swap(partner *Chromosome, index int) {
+func (c *Chromosome) Swap(partner *Chromosome, index int) {
 	c[index], partner[index] = partner[index], c[index]
 }
 
-//evolve function performs genetic operations; crossover and mutation
-func (c *Chromosome) Evolve(partner *Chromosome, otype OperationType, index int) {
-	if otype == Crossover {
-		endPoint := len(c)
 
-		for crossPoint := index + 1; crossPoint < endPoint; crossPoint++ {
-			c.swap(partner, crossPoint)
-		}
-
-		return	
-	}
-
-	c.swap(partner, index)
-}
 
