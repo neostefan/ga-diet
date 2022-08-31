@@ -79,8 +79,3 @@ func decodeChromosome(c definitions.Chromosome, sqlDB *sql.DB) []definitions.Ing
 
 	return ings
 }
-
-func main() {
-	RunAlgorithm("calories", "prices")
-}
-
