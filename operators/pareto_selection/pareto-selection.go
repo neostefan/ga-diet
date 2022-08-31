@@ -80,6 +80,7 @@ func Pareto(sqlDb *sql.DB, g1, g2 definitions.Generation, objs definitions.AimOb
 	return newGeneration(pF, sqlDb, objs, *omap, selectionGen)
 }
 
+//here implement checks for the objectives and allow for switching
 //creates the selectionmap from the slice of parents and children
 func createSelectionMap(sqlDb *sql.DB, selectionGen definitions.Generation) definitions.SelectionMap {
 	selectionMap := make(definitions.SelectionMap)
@@ -456,6 +457,7 @@ func getOldSelectionMap(smap definitions.SelectionMap) *definitions.SelectionMap
 	return &oldSelectionMap
 }
 
+//i'll need to pass the aim objective map to allow for switching and to check what objective is set to max or min
 //checks if the objectives of the chromosome is better than the selected chromosome objectives
 func checkConditions(objs definitions.Objectives, sObjs definitions.Objectives) (bool, bool) {
 	cond1 := true //by default our selected chromosome is the best

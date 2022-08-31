@@ -1,4 +1,4 @@
-package nsga
+package main
 
 import (
 	"database/sql"
@@ -31,7 +31,7 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 	fmt.Println("Printing the initial states...")
 
 	//where i would add the for loop
-	for i := 0; i < definitions.GenerationSize; i++ {
+	for i := 0; i < 1; i++ {
 		copy(parents, population)
 		fmt.Println("Generation: ", i + 1)
 		fmt.Println("Parents: ")
@@ -78,5 +78,9 @@ func decodeChromosome(c definitions.Chromosome, sqlDB *sql.DB) []definitions.Ing
 	}
 
 	return ings
+}
+
+func main() {
+	RunAlgorithm("calories", "prices")
 }
 
