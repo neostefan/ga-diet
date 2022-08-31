@@ -104,6 +104,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 	if index == int(definitions.CARBS) {
 		errE := db.QueryRow(`SELECT name, calories, cost FROM carbs WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
 		
+		ing.Type = "carbs"
+
 		if errE != nil {
 			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
 		}
@@ -113,14 +115,17 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 	if index == int(definitions.PROTEINS) {
 		errE := db.QueryRow(`SELECT name, calories, cost FROM proteins WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
 
+		ing.Type = "protein"
+
 		if errE != nil {
-			
 			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
 		}
 	}
 
 	if index == int(definitions.OILS) {
 		errE := db.QueryRow(`SELECT name, calories, cost FROM oils WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+
+		ing.Type = "oils"
 
 		if errE != nil {
 			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.BEVERAGES, errE)
@@ -129,6 +134,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 	
 	if index == int(definitions.VEGETABLES) {
 		errE := db.QueryRow(`SELECT name, calories, cost FROM vegetables WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+
+		ing.Type = "vegetables"
 
 		if errE != nil {
 			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.VEGETABLES, errE)
@@ -139,6 +146,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 	if index == int(definitions.BEVERAGES) {
 		errE := db.QueryRow(`SELECT name, calories, cost FROM beverages WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
 
+		ing.Type = "beverages"
+
 		if errE != nil {
 			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.FRUITS, errE)
 		}
@@ -147,6 +156,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 	
 	if index == int(definitions.FRUITS) {
 		errE := db.QueryRow(`SELECT name, calories, cost FROM fruits WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+
+		ing.Type = "fruits"
 
 		if errE != nil {
 			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.OILS, errE)

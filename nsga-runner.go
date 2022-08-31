@@ -1,4 +1,4 @@
-package GA
+package nsga
 
 import (
 	"database/sql"
