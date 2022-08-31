@@ -14,7 +14,7 @@ import (
 )
 
 func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails {
-	//ings := db.ReadFromCsvFile()
+	ings := db.ReadFromCsvFile()
 
 	sqlDb, err := sql.Open("sqlite3", "./db/meals.db")
 
@@ -22,10 +22,10 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 		fmt.Printf("Error occurred: %v", err)
 	}
 
-	//db.ShiftToDb(ings, sqlDb)
+	db.ShiftToDb(ings, sqlDb)
 
 
-	var ings []definitions.IngredientDetails
+	var finalIngs []definitions.IngredientDetails
 	population := operators.InitializePopulation(sqlDb)
 	parents := make(definitions.Generation, len(population))
 	fmt.Println("Printing the initial states...")
@@ -53,12 +53,12 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 		fmt.Println("printing the diet meal picked")
 		selectedDiet := population[0]
 
-		ings = decodeChromosome(selectedDiet, sqlDb)
+		finalIngs = decodeChromosome(selectedDiet, sqlDb)
 		fmt.Printf("\n The selected diet: %v", ings)
 	}
 
 	defer sqlDb.Close()
-	return ings
+	return finalIngs
 }
 
 func printChromosome(g definitions.Generation) {
