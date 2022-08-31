@@ -1,4 +1,4 @@
-package nsga
+package main
 
 import (
 	"database/sql"
@@ -14,7 +14,7 @@ import (
 )
 
 func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails {
-	ings := db.ReadFromCsvFile()
+	//ings := db.ReadFromCsvFile()
 
 	sqlDb, err := sql.Open("sqlite3", "./db/meals.db")
 
@@ -22,7 +22,7 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 		fmt.Printf("Error occurred: %v", err)
 	}
 
-	db.ShiftToDb(ings, sqlDb)
+	//db.ShiftToDb(ings, sqlDb)
 
 
 	var finalIngs []definitions.IngredientDetails
@@ -54,7 +54,7 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 		selectedDiet := population[0]
 
 		finalIngs = decodeChromosome(selectedDiet, sqlDb)
-		fmt.Printf("\n The selected diet: %v", ings)
+		fmt.Printf("\n The selected diet: %v", finalIngs)
 	}
 
 	defer sqlDb.Close()
@@ -78,4 +78,8 @@ func decodeChromosome(c definitions.Chromosome, sqlDB *sql.DB) []definitions.Ing
 	}
 
 	return ings
+}
+
+func main() {
+	RunAlgorithm("calories", "prices")
 }
