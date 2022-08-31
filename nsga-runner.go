@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/neostefan/diet-assistant/db"
 	"github.com/neostefan/diet-assistant/definitions"
 	"github.com/neostefan/diet-assistant/operators"
 	"github.com/neostefan/diet-assistant/operators/crossover"
@@ -12,7 +13,7 @@ import (
 	paretoselection "github.com/neostefan/diet-assistant/operators/pareto_selection"
 )
 
-func RunAlgorithm(maxObj string, minObj string) {
+func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails {
 	//ings := db.ReadFromCsvFile()
 
 	sqlDb, err := sql.Open("sqlite3", "./db/meals.db")
@@ -24,12 +25,13 @@ func RunAlgorithm(maxObj string, minObj string) {
 	//db.ShiftToDb(ings, sqlDb)
 
 
+	var ings []definitions.IngredientDetails
 	population := operators.InitializePopulation(sqlDb)
 	parents := make(definitions.Generation, len(population))
 	fmt.Println("Printing the initial states...")
 
 	//where i would add the for loop
-	for i := 0; i < 2; i++ {
+	for i := 0; i < definitions.GenerationSize; i++ {
 		copy(parents, population)
 		fmt.Println("Generation: ", i + 1)
 		fmt.Println("Parents: ")
@@ -48,14 +50,33 @@ func RunAlgorithm(maxObj string, minObj string) {
 		population = paretoselection.Pareto(sqlDb, parents, population, aimObj)
 		fmt.Println("printing result of the generation")
 		printChromosome(population)
+		fmt.Println("printing the diet meal picked")
+		selectedDiet := population[0]
+
+		ings = decodeChromosome(selectedDiet, sqlDb)
+		fmt.Printf("\n The selected diet: %v", ings)
 	}
 
 	defer sqlDb.Close()
+	return ings
 }
 
 func printChromosome(g definitions.Generation) {
 	for _, c := range g {
 		fmt.Printf("%d \n", c)	
 	}
+}
+
+func decodeChromosome(c definitions.Chromosome, sqlDB *sql.DB) []definitions.IngredientDetails {
+	ings := make([]definitions.IngredientDetails, 0)
+
+	for i, ingId := range c {
+
+		ing := db.GetIngredientById(ingId, i, sqlDB)
+
+		ings = append(ings, ing)
+	}
+
+	return ings
 }
 

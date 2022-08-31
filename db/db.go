@@ -98,6 +98,64 @@ func InsertIngredient(db *sql.DB, i *definitions.IngredientDetails) {
 	defer stmt.Close()
 }
 
+func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDetails {
+	ing := definitions.IngredientDetails{}
+
+	if index == int(definitions.CARBS) {
+		errE := db.QueryRow(`SELECT name, calories, cost FROM carbs WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+		
+		if errE != nil {
+			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
+		}
+
+	} 
+
+	if index == int(definitions.PROTEINS) {
+		errE := db.QueryRow(`SELECT name, calories, cost FROM proteins WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+
+		if errE != nil {
+			
+			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
+		}
+	}
+
+	if index == int(definitions.OILS) {
+		errE := db.QueryRow(`SELECT name, calories, cost FROM oils WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+
+		if errE != nil {
+			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.BEVERAGES, errE)
+		}
+	}
+	
+	if index == int(definitions.VEGETABLES) {
+		errE := db.QueryRow(`SELECT name, calories, cost FROM vegetables WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+
+		if errE != nil {
+			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.VEGETABLES, errE)
+		}
+
+	}
+	
+	if index == int(definitions.BEVERAGES) {
+		errE := db.QueryRow(`SELECT name, calories, cost FROM beverages WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+
+		if errE != nil {
+			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.FRUITS, errE)
+		}
+
+	}
+	
+	if index == int(definitions.FRUITS) {
+		errE := db.QueryRow(`SELECT name, calories, cost FROM fruits WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+
+		if errE != nil {
+			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.OILS, errE)
+		}
+	}
+
+	return ing
+}
+
 func GetCaloriesAndCost(db *sql.DB, c definitions.Chromosome) definitions.Objectives {
 	calcost := make(map[string]float64)
 	calories := make([]float64, 0)
@@ -298,10 +356,6 @@ func ParseStringToInt(s string) int {
 	}
 
 	return num
-}
-
-func GetIngredientById(id int) {
-	
 }
 
 func GetMaxId(db *sql.DB, t definitions.IngredientType ) int {
