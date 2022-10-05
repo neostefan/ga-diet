@@ -14,7 +14,7 @@ import (
 )
 
 func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails {
-	//ings := db.ReadFromCsvFile()
+	// ings := db.ReadFromCsvFile()
 
 	sqlDb, err := sql.Open("sqlite3", "./db/meals.db")
 
@@ -22,8 +22,7 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 		fmt.Printf("Error occurred: %v", err)
 	}
 
-	//db.ShiftToDb(ings, sqlDb)
-
+	// db.ShiftToDb(ings, sqlDb)
 
 	var finalIngs []definitions.IngredientDetails
 	population := operators.InitializePopulation(sqlDb)
@@ -33,7 +32,7 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 	//where i would add the for loop
 	for i := 0; i < 1; i++ {
 		copy(parents, population)
-		fmt.Println("Generation: ", i + 1)
+		fmt.Println("Generation: ", i+1)
 		fmt.Println("Parents: ")
 		printChromosome(population)
 		//c1.Evolve(&c2, definitions.Crossover, 1)
@@ -63,7 +62,7 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 
 func printChromosome(g definitions.Generation) {
 	for _, c := range g {
-		fmt.Printf("%d \n", c)	
+		fmt.Printf("%d \n", c)
 	}
 }
 

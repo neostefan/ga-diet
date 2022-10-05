@@ -16,15 +16,15 @@ type objectiveRange struct {
 
 //contains results of the check between pF elements and the next chromosome in the selection map
 type pFcheckMapResult struct {
-	result string
-	pFChromosomeIndex int
+	result                        string
+	pFChromosomeIndex             int
 	currChromosomeIndexNotInFront int
 }
 
 // type smapObjectiveRanges []objectiveRange
 
 type chrObjective struct {
-	chromosome int
+	chromosome     int
 	objectiveValue float64
 }
 
@@ -66,28 +66,28 @@ func Pareto(sqlDb *sql.DB, g1, g2 definitions.Generation, objs definitions.AimOb
 	// selectionGen = append(selectionGen, chrm05)
 	// selectionGen = append(selectionGen, chrm06)
 
-	selectionMap := createSelectionMap(sqlDb, selectionGen)
+	selectionMap := createSelectionMap(sqlDb, selectionGen, objs)
 	// mapLength := len(selectionMap)
 
 	//see the result of this
 	// fmt.Printf("\n selectionMap of parents and children: %v with total: %v\n", selectionMap, mapLength)
 	omap := getOldSelectionMap(selectionMap)
 	//fmt.Printf("\n max and min of the objectives: %v \n", getSelectionMapObjectivesRange(*omap, ))
-	pF := selection(&selectionMap, selectionGen)
+	pF := selection(&selectionMap, selectionGen, objs)
 	fmt.Printf("\n ParetoFront: %d \n", pF)
 	// fmt.Printf("\n New Generation: %d \n", newGeneration(pF, sqlDb, objs, *omap, selectionGen))
-	
+
 	return newGeneration(pF, sqlDb, objs, *omap, selectionGen)
 }
 
 //here implement checks for the objectives and allow for switching
 //creates the selectionmap from the slice of parents and children
-func createSelectionMap(sqlDb *sql.DB, selectionGen definitions.Generation) definitions.SelectionMap {
+func createSelectionMap(sqlDb *sql.DB, selectionGen definitions.Generation, objs definitions.AimObjectiveMap) definitions.SelectionMap {
 	selectionMap := make(definitions.SelectionMap)
 
 	//try to fix nest
 	for i, c := range selectionGen {
-		objectives := db.GetCaloriesAndCost(sqlDb, c)
+		objectives := db.GetObjectiveConstraintValues(sqlDb, c, objs)
 		selectionMap[i] = objectives
 		fmt.Println(i, ": ", c)
 	}
@@ -95,7 +95,7 @@ func createSelectionMap(sqlDb *sql.DB, selectionGen definitions.Generation) defi
 	return selectionMap
 }
 
-func selection(smap *definitions.SelectionMap, selectionGen definitions.Generation) definitions.ParetoFront {
+func selection(smap *definitions.SelectionMap, selectionGen definitions.Generation, constraintMap definitions.AimObjectiveMap) definitions.ParetoFront {
 	paretoFront := make(definitions.ParetoFront)
 	i := 1
 	counter := 0
@@ -112,18 +112,15 @@ func selection(smap *definitions.SelectionMap, selectionGen definitions.Generati
 				paretoFront[i] = append(paretoFront[i], chromosomeIndex)
 			} else {
 				sMap := *smap
-			
+
 				selectedChromosome = chromosomeIndex
 				selectedObjectives = objectives
 				pFrontObjectives := sMap[paretoFront[i][cIndex]]
 				fmt.Printf("selected chromosome: %v \n", selectionGen[chromosomeIndex])
-				
-
 
 				//checks if the GA objectives are fulfilled
-				cond1, cond2 := checkConditions(selectedObjectives, pFrontObjectives)
+				cond1, cond2 := checkConditions(selectedObjectives, pFrontObjectives, constraintMap)
 				fmt.Printf("Objectives being compared, selected: %v, next one: %v \n", pFrontObjectives, selectedObjectives)
-
 
 				//if both are satisfied add it to a paretoFront
 				// if cond1 && cond2 {
@@ -133,7 +130,7 @@ func selection(smap *definitions.SelectionMap, selectionGen definitions.Generati
 				//if one is not satisfied or dominated add the chromosome to the same front
 				if cond1 && !cond2 || !cond1 && cond2 {
 					if pFrontLength > 0 {
-						checkParetoFrontElements(&paretoFront, selectedChromosome, i, chromosomeIndex, sMap)
+						checkParetoFrontElements(&paretoFront, selectedChromosome, i, chromosomeIndex, sMap, constraintMap)
 					} else {
 						paretoFront[i] = append(paretoFront[i], chromosomeIndex)
 					}
@@ -141,7 +138,7 @@ func selection(smap *definitions.SelectionMap, selectionGen definitions.Generati
 
 				if !cond1 && !cond2 {
 					if pFrontLength > 0 {
-						checkParetoFrontElements(&paretoFront, selectedChromosome, i, chromosomeIndex, sMap)
+						checkParetoFrontElements(&paretoFront, selectedChromosome, i, chromosomeIndex, sMap, constraintMap)
 					} else {
 						paretoFront[i][0] = chromosomeIndex
 						//paretoFront = updateParetoFront(paretoFront, i, selectedChromosome, index)
@@ -156,7 +153,7 @@ func selection(smap *definitions.SelectionMap, selectionGen definitions.Generati
 		for _, v := range paretoFront[i] {
 			delete(*smap, v)
 		}
-		
+
 		i = i + 1
 
 		if len(*smap) == 0 {
@@ -170,46 +167,46 @@ func selection(smap *definitions.SelectionMap, selectionGen definitions.Generati
 //calculates the crowding distance and returns the more lonely ones or isolated ones per objective key
 func findCrowdingDistance(oSmap, pFsMap definitions.SelectionMap, keys definitions.AimObjectiveMap) []chrObjective {
 	crDistValues := make([]float64, len(keys)) //array of the crowding distance indexed according to the sorted front
-	crDistMap := make(map[int][]float64) //chromosomeIndex map to the crowding distance
+	crDistMap := make(map[int][]float64)       //chromosomeIndex map to the crowding distance
 	crv := 0
 	finalSolutionList := make([]chrObjective, 0)
 	for aim, key := range keys {
-		sPfValues := sortParetoFrontSelectionMap(key, pFsMap) // sorted values in the front
+		sPfValues := sortParetoFrontSelectionMap(key, pFsMap)         // sorted values in the front
 		generationRange := getSelectionMapObjectivesRange(oSmap, key) //max and min of the original selection map
-		lastValueInSort := len(sPfValues) - 1  //last value in the sorted front(biggest value)	
+		lastValueInSort := len(sPfValues) - 1                         //last value in the sorted front(biggest value)
 
 		if aim == definitions.MAX {
-				
+
 			fmt.Println("The selected paretoFront and it's objective values: ", sPfValues)
 			for i := range sPfValues {
 				//checks if the index is between the last value and the first then calculates the crowding distance
 				if i > 0 && i < lastValueInSort {
-					numerator := sPfValues[i + 1].objectiveValue - sPfValues[i - 1].objectiveValue
+					numerator := sPfValues[i+1].objectiveValue - sPfValues[i-1].objectiveValue
 					denominator := generationRange.max - generationRange.min
 					fmt.Printf("\n Numerator: %v \n", numerator)
-					crDistValues[crv] = numerator/denominator
+					crDistValues[crv] = numerator / denominator
 					crDistMap[sPfValues[i].chromosome] = append(crDistMap[sPfValues[i].chromosome], numerator/denominator)
 				}
-	
+
 				//assigns the index of the biggest or maximum value for the key a large crowding distance
 				if i == lastValueInSort {
 					crDistMap[sPfValues[i].chromosome] = append(crDistMap[sPfValues[i].chromosome], 1000.00)
 				}
 			}
 		}
-	
+
 		if aim == definitions.MIN {
 			fmt.Println("The selected paretoFRont and it's objective values: ", sPfValues)
 			for i := range sPfValues {
 				//checks if the index is between the last value and the first then calculates the crowding distance
 				if i > 0 && i < lastValueInSort {
-					numerator := sPfValues[i + 1].objectiveValue - sPfValues[i - 1].objectiveValue
+					numerator := sPfValues[i+1].objectiveValue - sPfValues[i-1].objectiveValue
 					denominator := generationRange.max - generationRange.min
-					crDistValues[crv] = numerator/denominator
+					crDistValues[crv] = numerator / denominator
 					fmt.Printf("\n Numerator: %v \n", numerator)
 					crDistMap[sPfValues[i].chromosome] = append(crDistMap[sPfValues[i].chromosome], numerator/denominator)
 				}
-	
+
 				//assigns the index of the biggest or maximum value for the key a large crowding distance
 				if i == 0 {
 					crDistMap[sPfValues[i].chromosome] = append(crDistMap[sPfValues[i].chromosome], 1000.00)
@@ -223,11 +220,11 @@ func findCrowdingDistance(oSmap, pFsMap definitions.SelectionMap, keys definitio
 	for k, v := range crDistMap {
 		fmt.Println("The values cr distance: ", v)
 		chr := chrObjective{
-			chromosome: k,
+			chromosome:     k,
 			objectiveValue: addCrDistance(v),
 		}
 
-		finalSolutionList = append(finalSolutionList, chr) 
+		finalSolutionList = append(finalSolutionList, chr)
 	}
 
 	return finalSolutionList
@@ -235,11 +232,11 @@ func findCrowdingDistance(oSmap, pFsMap definitions.SelectionMap, keys definitio
 
 func addCrDistance(crDistances []float64) float64 {
 	curr := 0.0
-	
+
 	for _, v := range crDistances {
 		curr = curr + v
 	}
-	
+
 	return curr
 }
 
@@ -247,13 +244,12 @@ func sortParetoFrontSelectionMap(key string, pFsMap definitions.SelectionMap) []
 	values := make([]float64, 0)
 	chrObjectiveMap := make([]chrObjective, 0)
 
-
 	for _, objectives := range pFsMap {
 		for k, objValue := range objectives {
 			if k == key {
 				values = append(values, objValue)
 			}
-		} 
+		}
 	}
 
 	sort.Float64s(values)
@@ -261,7 +257,7 @@ func sortParetoFrontSelectionMap(key string, pFsMap definitions.SelectionMap) []
 	for _, v := range values {
 		c := findChromosomeBasedOnObjectiveValue(v, pFsMap)
 		chrObj := chrObjective{
-			chromosome: c,
+			chromosome:     c,
 			objectiveValue: v,
 		}
 		chrObjectiveMap = append(chrObjectiveMap, chrObj)
@@ -291,10 +287,10 @@ func getHighestCrowdingDistance(crMap *[]chrObjective) int {
 
 	for i, v := range *crMap {
 		if i > 0 {
-			if v.objectiveValue > cRMap[i - 1].objectiveValue {
+			if v.objectiveValue > cRMap[i-1].objectiveValue {
 				highestIndex = i
 			}
-		} 
+		}
 	}
 
 	return highestIndex
@@ -302,7 +298,7 @@ func getHighestCrowdingDistance(crMap *[]chrObjective) int {
 
 //loops through the map for the highest crowding distance and returns the chromosome
 func pickChromosomeByHighestCrowdingDistance(crMap []chrObjective, slots int) []int {
-	
+
 	var bChromosomes []int
 	counter := 0
 
@@ -312,8 +308,8 @@ func pickChromosomeByHighestCrowdingDistance(crMap []chrObjective, slots int) []
 		fmt.Println("The Chromosome selected: ", crMap[index].chromosome)
 		fmt.Println("The Counter: ", counter)
 		bChromosomes = append(bChromosomes, crMap[index].chromosome)
-		crMap[index] = crMap[len(crMap) - 1]
-		crMap = crMap[:len(crMap) - 1]
+		crMap[index] = crMap[len(crMap)-1]
+		crMap = crMap[:len(crMap)-1]
 		counter++
 	}
 
@@ -329,7 +325,7 @@ func newGeneration(pF definitions.ParetoFront, sqlDb *sql.DB, keys definitions.A
 	fmt.Println("Slots Available: ", slotsAvailable)
 	fmt.Println("length of nG: ", len(nG))
 	fmt.Println("Pareto Front: ", pF)
-	
+
 	//looping through a pareto front set of chromosome indicies
 	for _, key := range pFkeys {
 
@@ -349,25 +345,25 @@ func newGeneration(pF definitions.ParetoFront, sqlDb *sql.DB, keys definitions.A
 				}
 
 				//create a new selection map based off the pareto front values
-				pFsMap := createSelectionMap(sqlDb, pFgen)
+				pFsMap := createSelectionMap(sqlDb, pFgen, keys)
 
 				//finds the crowding distance based off the new selection map
 				final := findCrowdingDistance(osMap, pFsMap, keys)
 
 				//picks out the chromosome indicies by the highest crowding distance
 				chromosomeIndicies := pickChromosomeByHighestCrowdingDistance(final, slotsAvailable)
-				
+
 				//convert the chromosomeIndicies back to the chromosomes
 				for _, v := range chromosomeIndicies {
 					nG = append(nG, pFgen[v])
 				}
-				
+
 			} else {
 				for _, chromosomeIndex := range pF[key] {
 					nG = append(nG, selectionGen[chromosomeIndex])
-					slotsAvailable = definitions.PopulationSize - len(nG)	
+					slotsAvailable = definitions.PopulationSize - len(nG)
 				}
-			}	
+			}
 		}
 	}
 
@@ -398,7 +394,7 @@ func getSelectionMapObjectivesRange(smap definitions.SelectionMap, key string) o
 
 	for _, objectives := range smap {
 		for k, v := range objectives {
-			//change the key to objective one 
+			//change the key to objective one
 			if k == key {
 				objectiveOne = append(objectiveOne, v)
 			}
@@ -433,7 +429,7 @@ func getSelectionMapObjectivesRange(smap definitions.SelectionMap, key string) o
 			// 	minObjTwo = objectiveTwo[i]
 			// }
 		}
-		
+
 	}
 
 	objOneRange.max = maxObjOne
@@ -459,19 +455,31 @@ func getOldSelectionMap(smap definitions.SelectionMap) *definitions.SelectionMap
 
 //i'll need to pass the aim objective map to allow for switching and to check what objective is set to max or min
 //checks if the objectives of the chromosome is better than the selected chromosome objectives
-func checkConditions(objs definitions.Objectives, sObjs definitions.Objectives) (bool, bool) {
+func checkConditions(objs definitions.Objectives, sObjs definitions.Objectives, constraints definitions.AimObjectiveMap) (bool, bool) {
 	cond1 := true //by default our selected chromosome is the best
 	cond2 := true
+	var maxConstraint string
+	var minConstraint string
+
+	for k, v := range constraints {
+		if k == definitions.MAX {
+			maxConstraint = v
+		}
+
+		if k == definitions.MIN {
+			minConstraint = v
+		}
+	}
 
 	for key, value := range objs {
-		if key == "calories" {
+		if key == maxConstraint {
 			//maximizing calories
 			if value > sObjs[key] {
 				cond1 = false
 			}
 		}
 
-		if key == "prices" {
+		if key == minConstraint {
 			//minimizing price
 			if value < sObjs[key] {
 				cond2 = false
@@ -499,11 +507,11 @@ func checkForChromosome(frontSliceOfChromosomeIndex []int, chromosomeIndex int) 
 }
 
 //! check this possible likely hood i am removing duplicates
-// returns index of a chromosome from the pareto front for deletion 
-func updateParetoFront(pF *definitions.ParetoFront, index int, frontIndex int, checkResult *pFcheckMapResult) {	
-	
+// returns index of a chromosome from the pareto front for deletion
+func updateParetoFront(pF *definitions.ParetoFront, index int, frontIndex int, checkResult *pFcheckMapResult) {
+
 	Pf := *pF
-	
+
 	fmt.Println("The frontIndex: ", frontIndex)
 	fmt.Printf("\n Pareto front i am working with: %v \n", pF)
 	fmt.Printf("\n Pareto front in the update: %v \n", Pf)
@@ -539,28 +547,28 @@ func deleteFromParetoFront(pF *definitions.ParetoFront, frontIndex int, frontChr
 		frontSliceOfChromosomeIndex = make([]int, 0)
 		Pf[frontIndex] = frontSliceOfChromosomeIndex
 	} else {
-		frontSliceOfChromosomeIndex[frontChromosomeIndex] = frontSliceOfChromosomeIndex[len(frontSliceOfChromosomeIndex) - 1]
-		Pf[frontIndex] = frontSliceOfChromosomeIndex[:len(frontSliceOfChromosomeIndex) - 1]
+		frontSliceOfChromosomeIndex[frontChromosomeIndex] = frontSliceOfChromosomeIndex[len(frontSliceOfChromosomeIndex)-1]
+		Pf[frontIndex] = frontSliceOfChromosomeIndex[:len(frontSliceOfChromosomeIndex)-1]
 	}
 
 	// pF = &Pf
 }
 
 func addToParetoFront(pF *definitions.ParetoFront, chromosomeIndex int, frontIndex int) {
-	
+
 	Pf := *pF
 	frontSliceOfChromosomeIndex := Pf[frontIndex]
 	_, ok := checkForChromosome(frontSliceOfChromosomeIndex, chromosomeIndex)
 
 	if !ok {
-		frontSliceOfChromosomeIndex = append(frontSliceOfChromosomeIndex, chromosomeIndex)	
+		frontSliceOfChromosomeIndex = append(frontSliceOfChromosomeIndex, chromosomeIndex)
 	}
-	
+
 	Pf[frontIndex] = frontSliceOfChromosomeIndex
 }
 
 //pFChroIndex sC
-func checkParetoFrontElements(pF *definitions.ParetoFront, pFChromosomeIndex int, index int, currChromosomeIndex int, smap definitions.SelectionMap) {
+func checkParetoFrontElements(pF *definitions.ParetoFront, pFChromosomeIndex int, index int, currChromosomeIndex int, smap definitions.SelectionMap, constraintMap definitions.AimObjectiveMap) {
 	Pf := *pF
 	chromsomeCheckMap := map[string]map[int]int{}
 	currChromosomeIndexTopFchromosomeIndex := map[int]int{}
@@ -568,7 +576,7 @@ func checkParetoFrontElements(pF *definitions.ParetoFront, pFChromosomeIndex int
 
 	for i, c := range Pf[index] {
 		fmt.Printf("\n objectives being compared chromosome: %v selected chromosome: %v \n", smap[c], smap[pFChromosomeIndex])
-		cond1, cond2 := checkConditions(smap[c], smap[pFChromosomeIndex])
+		cond1, cond2 := checkConditions(smap[c], smap[pFChromosomeIndex], constraintMap)
 
 		fmt.Println("Codition check result: ", cond1, cond2)
 
@@ -611,7 +619,7 @@ func checkParetoFrontElements(pF *definitions.ParetoFront, pFChromosomeIndex int
 					deleteFromParetoFront(pF, index, pFindex)
 				}
 			}
-		} 
+		}
 	}
 
 	fmt.Println("Pareto Front currently: ", Pf)

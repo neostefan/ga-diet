@@ -22,8 +22,8 @@ type ChromosomeCache struct {
 
 const (
 	CALORIES = "calories"
-	PROTEIN = "protein"
-	PRICE = "prices"
+	PROTEIN  = "protein"
+	PRICE    = "cost"
 )
 
 const (
@@ -48,15 +48,16 @@ const (
 
 // const (
 // 	Mutation OperationType = iota
-// 	Crossover 
+// 	Crossover
 // )
 
 type HealthyPlateContent int
 type IngredientDetails struct {
-	Name string
+	Name     string
 	Calories float64
-	Cost float64
-	Type string 
+	Protein  float64
+	Cost     float64
+	Type     string
 }
 
 type MealOptions []*IngredientDetails
@@ -74,6 +75,3 @@ type Ingredients []Ingredient
 func (c *Chromosome) Swap(partner *Chromosome, index int) {
 	c[index], partner[index] = partner[index], c[index]
 }
-
-
-

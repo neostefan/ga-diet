@@ -17,27 +17,27 @@ func CreateTables(db *sql.DB, t string) {
 	var err error
 
 	if t == "carbs" {
-		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS carbs (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, cost FLOAT, type TEXT)`)
+		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS carbs (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, protein FLOAT, cost FLOAT, type TEXT)`)
 	}
 
 	if t == "protein" {
-		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS proteins (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, cost FLOAT, type TEXT)`)
+		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS proteins (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, protein FLOAT, cost FLOAT, type TEXT)`)
 	}
 
 	if t == "oil" {
-		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS oils (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, cost FLOAT, type TEXT)`)
+		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS oils (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, protein FLOAT, cost FLOAT, type TEXT)`)
 	}
 
 	if t == "vegetables" {
-		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS vegetables (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, cost FLOAT, type TEXT)`)
+		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS vegetables (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, protein FLOAT, cost FLOAT, type TEXT)`)
 	}
 
 	if t == "beverage" {
-		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS beverages (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, cost FLOAT, type TEXT)`)
+		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS beverages (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, protein FLOAT, cost FLOAT, type TEXT)`)
 	}
 
 	if t == "fruit" {
-		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS fruits (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, cost FLOAT, type TEXT)`)
+		stmt, err = db.Prepare(`CREATE TABLE IF NOT EXISTS fruits (id INTEGER PRIMARY KEY, name VARCHAR(255), calories FLOAT, protein FLOAT, cost FLOAT, type TEXT)`)
 	}
 
 	if err != nil {
@@ -61,35 +61,34 @@ func InsertIngredient(db *sql.DB, i *definitions.IngredientDetails) {
 	var err error
 
 	if i.Type == "carbs" {
-		stmt, err = db.Prepare(`INSERT INTO carbs (name, calories, cost, type) VALUES (?, ?, ?, ?)`)
+		stmt, err = db.Prepare(`INSERT INTO carbs (name, calories, protein, cost, type) VALUES (?, ?, ?, ?, ?)`)
 	}
 
 	if i.Type == "protein" {
-		stmt, err = db.Prepare(`INSERT INTO proteins (name, calories, cost, type) VALUES (?, ?, ?, ?)`)
+		stmt, err = db.Prepare(`INSERT INTO proteins (name, calories, protein, cost, type) VALUES (?, ?, ?, ?, ?)`)
 	}
 
 	if i.Type == "oil" {
-		stmt, err = db.Prepare(`INSERT INTO oils (name, calories, cost, type) VALUES (?, ?, ?, ?)`)
+		stmt, err = db.Prepare(`INSERT INTO oils (name, calories, protein, cost, type) VALUES (?, ?, ?, ?, ?)`)
 	}
 
 	if i.Type == "vegetables" {
-		stmt, err = db.Prepare(`INSERT INTO vegetables (name, calories, cost, type) VALUES (?, ?, ?, ?)`)
+		stmt, err = db.Prepare(`INSERT INTO vegetables (name, calories, protein, cost, type) VALUES (?, ?, ?, ?, ?)`)
 	}
 
 	if i.Type == "beverage" {
-		stmt, err = db.Prepare(`INSERT INTO beverages (name, calories, cost, type) VALUES (?, ?, ?, ?)`)
+		stmt, err = db.Prepare(`INSERT INTO beverages (name, calories, protein, cost, type) VALUES (?, ?, ?, ?, ?)`)
 	}
 
 	if i.Type == "fruit" {
-		stmt, err = db.Prepare(`INSERT INTO fruits (name, calories, cost, type) VALUES (?, ?, ?, ?)`)
+		stmt, err = db.Prepare(`INSERT INTO fruits (name, calories, protein, cost, type) VALUES (?, ?, ?, ?, ?)`)
 	}
-
 
 	if err != nil {
 		fmt.Printf("Error occurred in initial inserting data: %v", err)
 	}
 
-	_, errE := stmt.Exec(i.Name, i.Calories, i.Cost, i.Type)
+	_, errE := stmt.Exec(i.Name, i.Calories, i.Protein, i.Cost, i.Type)
 
 	if errE != nil {
 		fmt.Printf("Error occurred in inserting data: %v", errE)
@@ -102,18 +101,18 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 	ing := definitions.IngredientDetails{}
 
 	if index == int(definitions.CARBS) {
-		errE := db.QueryRow(`SELECT name, calories, cost FROM carbs WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
-		
+		errE := db.QueryRow(`SELECT name, calories, protein, cost FROM carbs WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Protein, &ing.Cost)
+
 		ing.Type = "carbs"
 
 		if errE != nil {
 			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
 		}
 
-	} 
+	}
 
 	if index == int(definitions.PROTEINS) {
-		errE := db.QueryRow(`SELECT name, calories, cost FROM proteins WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+		errE := db.QueryRow(`SELECT name, calories, protein, cost FROM proteins WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Protein, &ing.Cost)
 
 		ing.Type = "protein"
 
@@ -123,7 +122,7 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 	}
 
 	if index == int(definitions.OILS) {
-		errE := db.QueryRow(`SELECT name, calories, cost FROM oils WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+		errE := db.QueryRow(`SELECT name, calories, protein, cost FROM oils WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Protein, &ing.Cost)
 
 		ing.Type = "oils"
 
@@ -131,9 +130,9 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.BEVERAGES, errE)
 		}
 	}
-	
+
 	if index == int(definitions.VEGETABLES) {
-		errE := db.QueryRow(`SELECT name, calories, cost FROM vegetables WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+		errE := db.QueryRow(`SELECT name, calories, protein, cost FROM vegetables WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Protein, &ing.Cost)
 
 		ing.Type = "vegetables"
 
@@ -142,9 +141,9 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 		}
 
 	}
-	
+
 	if index == int(definitions.BEVERAGES) {
-		errE := db.QueryRow(`SELECT name, calories, cost FROM beverages WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+		errE := db.QueryRow(`SELECT name, calories, protein, cost FROM beverages WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Protein, &ing.Cost)
 
 		ing.Type = "beverages"
 
@@ -153,9 +152,9 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 		}
 
 	}
-	
+
 	if index == int(definitions.FRUITS) {
-		errE := db.QueryRow(`SELECT name, calories, cost FROM fruits WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Cost)
+		errE := db.QueryRow(`SELECT name, calories, protein, cost FROM fruits WHERE id = ?`, id).Scan(&ing.Name, &ing.Calories, &ing.Protein, &ing.Cost)
 
 		ing.Type = "fruits"
 
@@ -167,42 +166,46 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 	return ing
 }
 
-func GetCaloriesAndCost(db *sql.DB, c definitions.Chromosome) definitions.Objectives {
-	calcost := make(map[string]float64)
+func GetObjectiveConstraintValues(db *sql.DB, c definitions.Chromosome, constraints definitions.AimObjectiveMap) definitions.Objectives {
+	objectiveConstraintMap := make(map[string]float64)
 	calories := make([]float64, 0)
+	proteins := make([]float64, 0)
 	prices := make([]float64, 0)
 	var calorie float64
 	var price float64
+	var protein float64
 	sumCalories := 0.0
 	sumCost := 0.0
-	
+	sumProteins := 0.0
+
 	for i, id := range c {
 		if i == int(definitions.CARBS) {
-			errE := db.QueryRow(`SELECT calories, cost FROM carbs WHERE id = ?`, id).Scan(&calorie, &price)
+			errE := db.QueryRow(`SELECT calories, cost, protein FROM carbs WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
-			
 			if errE != nil {
 				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
 			}
 
 			calories = append(calories, calorie)
 			prices = append(prices, price)
-		} 
+			proteins = append(proteins, protein)
+		}
 
 		if i == int(definitions.PROTEINS) {
-			errE := db.QueryRow(`SELECT calories, cost FROM proteins WHERE id = ?`, id).Scan(&calorie, &price)
+			errE := db.QueryRow(`SELECT calories, cost, protein FROM proteins WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
-				
+
 				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
 			}
 
 			calories = append(calories, calorie)
 			prices = append(prices, price)
+			proteins = append(proteins, protein)
 		}
 
 		if i == int(definitions.OILS) {
-			errE := db.QueryRow(`SELECT calories, cost FROM oils WHERE id = ?`, id).Scan(&calorie, &price)
+			errE := db.QueryRow(`SELECT calories, cost, protein FROM oils WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
 				fmt.Println(id)
@@ -212,10 +215,11 @@ func GetCaloriesAndCost(db *sql.DB, c definitions.Chromosome) definitions.Object
 
 			calories = append(calories, calorie)
 			prices = append(prices, price)
+			proteins = append(proteins, protein)
 		}
-		
+
 		if i == int(definitions.VEGETABLES) {
-			errE := db.QueryRow(`SELECT calories, cost FROM vegetables WHERE id = ?`, id).Scan(&calorie, &price)
+			errE := db.QueryRow(`SELECT calories, cost, protein FROM vegetables WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
 				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.VEGETABLES, errE)
@@ -223,10 +227,11 @@ func GetCaloriesAndCost(db *sql.DB, c definitions.Chromosome) definitions.Object
 
 			calories = append(calories, calorie)
 			prices = append(prices, price)
+			proteins = append(proteins, protein)
 		}
-		
+
 		if i == int(definitions.BEVERAGES) {
-			errE := db.QueryRow(`SELECT calories, cost FROM beverages WHERE id = ?`, id).Scan(&calorie, &price)
+			errE := db.QueryRow(`SELECT calories, cost, protein FROM beverages WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
 				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.FRUITS, errE)
@@ -234,10 +239,11 @@ func GetCaloriesAndCost(db *sql.DB, c definitions.Chromosome) definitions.Object
 
 			calories = append(calories, calorie)
 			prices = append(prices, price)
+			proteins = append(proteins, protein)
 		}
-		
+
 		if i == int(definitions.FRUITS) {
-			errE := db.QueryRow(`SELECT calories, cost FROM fruits WHERE id = ?`, id).Scan(&calorie, &price)
+			errE := db.QueryRow(`SELECT calories, cost, protein FROM fruits WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
 				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.OILS, errE)
@@ -245,18 +251,31 @@ func GetCaloriesAndCost(db *sql.DB, c definitions.Chromosome) definitions.Object
 
 			calories = append(calories, calorie)
 			prices = append(prices, price)
+			proteins = append(proteins, protein)
 		}
 	}
 
 	for i := 0; i < len(c); i++ {
 		sumCalories = sumCalories + calories[i]
 		sumCost = sumCost + prices[i]
+		sumProteins = sumProteins + proteins[i]
 	}
 
-	calcost["calories"] = sumCalories
-	calcost["prices"] = sumCost
+	for _, v := range constraints {
+		if v == definitions.CALORIES {
+			objectiveConstraintMap[definitions.CALORIES] = sumCalories
+		}
 
-	return calcost
+		if v == definitions.PROTEIN {
+			objectiveConstraintMap[definitions.PROTEIN] = sumProteins
+		}
+
+		if v == definitions.PRICE {
+			objectiveConstraintMap[definitions.PRICE] = sumCost
+		}
+	}
+
+	return objectiveConstraintMap
 }
 
 func ShiftToDb(i definitions.Ingredients, db *sql.DB) {
@@ -328,15 +347,19 @@ func ReadFromCsvFile() definitions.Ingredients {
 				if i == 2 {
 					ingD.Cost = ParseStringToFloat(m)
 				}
-	
+
 				if i == 3 {
 					ingD.Calories = ParseStringToFloat(m)
 				}
-	
+
+				if i == 4 {
+					ingD.Protein = ParseStringToFloat(m)
+				}
+
 				if i == 0 {
 					ingD.Name = m
 				}
-	
+
 				if i == 12 {
 					ingD.Type = m
 				}
@@ -369,7 +392,7 @@ func ParseStringToInt(s string) int {
 	return num
 }
 
-func GetMaxId(db *sql.DB, t definitions.IngredientType ) int {
+func GetMaxId(db *sql.DB, t definitions.IngredientType) int {
 	var maxId int
 	var err error
 	if t == definitions.CARBS {
