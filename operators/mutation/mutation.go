@@ -1,8 +1,8 @@
 package mutation
 
 import (
-	"github.com/neostefan/diet-assistant/definitions"
-	"github.com/neostefan/diet-assistant/util"
+	"github.com/neostefan/ga-diet/definitions"
+	"github.com/neostefan/ga-diet/util"
 )
 
 func mutate(c1, c2 *definitions.Chromosome, index int) {
@@ -15,12 +15,12 @@ func Mutation(g definitions.Generation, index int) definitions.Generation {
 	lastC := len(g) - 1
 	pi := 0
 
-	//creates the probabilities array of each chromosome 
+	//creates the probabilities array of each chromosome
 	probabilitySize := definitions.PopulationSize / 2
-	if definitions.PopulationSize % 2 != 0 {
+	if definitions.PopulationSize%2 != 0 {
 		probabilitySize = (definitions.PopulationSize - 1) / 2
 	}
-	
+
 	probabilities := make([]float64, probabilitySize)
 
 	for p := 0; p < probabilitySize; p++ {
@@ -31,7 +31,7 @@ func Mutation(g definitions.Generation, index int) definitions.Generation {
 	for len(g) != len(gen) {
 		if i < lastC {
 			c1 := &g[i]
-			c2 := &g[i + 1]
+			c2 := &g[i+1]
 
 			//0.5 is the minimum allowance for mutation to occur
 			if probabilities[pi] > 0.5 {

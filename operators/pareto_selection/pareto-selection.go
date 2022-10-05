@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/neostefan/diet-assistant/db"
-	"github.com/neostefan/diet-assistant/definitions"
+	"github.com/neostefan/ga-diet/db"
+	"github.com/neostefan/ga-diet/definitions"
 )
 
 type objectiveRange struct {

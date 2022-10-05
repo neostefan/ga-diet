@@ -1,8 +1,8 @@
 package crossover
 
 import (
-	"github.com/neostefan/diet-assistant/definitions"
-	"github.com/neostefan/diet-assistant/util"
+	"github.com/neostefan/ga-diet/definitions"
+	"github.com/neostefan/ga-diet/util"
 )
 
 //cross function performs genetic operations; crossover and mutation
@@ -26,10 +26,10 @@ func Crossover(g definitions.Generation, index int) definitions.Generation {
 	pi := 0
 
 	probabilitySize := definitions.PopulationSize / 2
-	if definitions.PopulationSize % 2 != 0 {
+	if definitions.PopulationSize%2 != 0 {
 		probabilitySize = (definitions.PopulationSize - 1) / 2
 	}
-	
+
 	probabilities := make([]float64, probabilitySize)
 
 	for p := 0; p < probabilitySize; p++ {
@@ -40,7 +40,7 @@ func Crossover(g definitions.Generation, index int) definitions.Generation {
 	for len(gen) != len(g) {
 		if i < lastC {
 			c1 := &g[i]
-			c2 := &g[i + 1]
+			c2 := &g[i+1]
 
 			//0.25 is the min allowance for crossover to occur
 			if probabilities[pi] > 0.1 {

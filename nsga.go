@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/neostefan/diet-assistant/db"
-	"github.com/neostefan/diet-assistant/definitions"
-	"github.com/neostefan/diet-assistant/operators"
-	"github.com/neostefan/diet-assistant/operators/crossover"
-	"github.com/neostefan/diet-assistant/operators/mutation"
-	paretoselection "github.com/neostefan/diet-assistant/operators/pareto_selection"
+	"github.com/neostefan/ga-diet/db"
+	"github.com/neostefan/ga-diet/definitions"
+	"github.com/neostefan/ga-diet/operators"
+	"github.com/neostefan/ga-diet/operators/crossover"
+	"github.com/neostefan/ga-diet/operators/mutation"
+	paretoselection "github.com/neostefan/ga-diet/operators/pareto_selection"
 )
 
 func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails {

@@ -9,7 +9,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/neostefan/diet-assistant/definitions"
+	"github.com/neostefan/ga-diet/definitions"
 )
 
 func CreateTables(db *sql.DB, t string) {
