@@ -8,7 +8,6 @@ type Objectives map[string]float64
 type SelectionMap map[int]Objectives
 
 // type ParetoFront map[int]Generation
-
 type ParetoFront map[int][]int
 
 type Aim int32
@@ -20,10 +19,32 @@ type ChromosomeCache struct {
 	Objectives Objectives
 }
 
+//FG Classification
+//Beverage
+
+type diabetesConstraint struct {
+	FGClassification string // food group classification
+}
+
+type ulcerConstraint struct {
+	Flavor    string
+	Taste     string
+	Cullinary string
+}
+
+//Age constraints definitions
+
 const (
 	CALORIES = "calories"
 	PROTEIN  = "protein"
 	PRICE    = "cost"
+)
+
+type DietCondition int
+
+const (
+	DIABETES DietCondition = iota
+	ULCER
 )
 
 const (
@@ -32,7 +53,7 @@ const (
 )
 
 const (
-	ChromosomeSize = 6
+	ChromosomeSize = 5
 	PopulationSize = 3
 	GenerationSize = 200
 )
@@ -53,16 +74,23 @@ const (
 
 type HealthyPlateContent int
 type IngredientDetails struct {
-	Name     string
-	Calories float64
-	Protein  float64
-	Cost     float64
-	Type     string
+	Name      string
+	Calories  float64
+	Carbs     float64
+	Fat       float64
+	Protein   float64
+	Cost      float64
+	FoodGroup string
+	Cullinary string
+	Allergen  string
+	Taste     string
+	Flavor    string
+	Type      string
 }
 
 type MealOptions []*IngredientDetails
 
-//Chromosome contains an array of six integers
+//Chromosome contains an array of five integers
 type Chromosome [ChromosomeSize]int
 
 type Generation []Chromosome
@@ -70,6 +98,22 @@ type Generation []Chromosome
 type Ingredient map[string]*IngredientDetails
 
 type Ingredients []Ingredient
+
+//initialize an ulcer constraint
+func UlcerConstraint() ulcerConstraint {
+	return ulcerConstraint{
+		Taste:     "spicy", //although taste and flavor are same for situations that require multiple limits they are seperated
+		Flavor:    "acidic",
+		Cullinary: "fried",
+	}
+}
+
+//initialize diabetic constraint
+func DiabetesConstraint() diabetesConstraint {
+	return diabetesConstraint{
+		FGClassification: "whole",
+	}
+}
 
 //swap function swap the chromosome with it's partner based on the index specified
 func (c *Chromosome) Swap(partner *Chromosome, index int) {

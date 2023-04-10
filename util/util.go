@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+var (
+	UlcerExclusions    []string = []string{"Spicy", "Fried", "Acidic"}
+	DiabetesExclusions []string = []string{}
+	Elderly            []string = []string{}
+)
+
 //Gets a random ingredient ID stored in the db
 func GetRandomIngredientId(l int) (Id int) {
 	seed := rand.NewSource(time.Now().UnixNano())
@@ -18,7 +24,6 @@ func GetRandomIngredientId(l int) (Id int) {
 
 	return id
 }
-
 
 //Generating random probabilties for crossover
 func GetRandomProbabilty() (prob float64) {

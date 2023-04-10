@@ -5,11 +5,10 @@ import (
 
 	"github.com/neostefan/ga-diet/db"
 	"github.com/neostefan/ga-diet/definitions"
-	"github.com/neostefan/ga-diet/util"
 )
 
 //Initializes the population
-func InitializePopulation(sqlDB *sql.DB) definitions.Generation {
+func InitializePopulation(sqlDB *sql.DB, conditions []definitions.DietCondition) definitions.Generation {
 
 	var cr definitions.Chromosome
 	var generation definitions.Generation
@@ -23,17 +22,24 @@ func InitializePopulation(sqlDB *sql.DB) definitions.Generation {
 			//Update the Chromosome with the ingredient meant for that index
 			switch {
 			case j == 0:
-				cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.CARBS))
+				maxId := db.GetMaxId(sqlDB, definitions.CARBS)
+				cr[j] = db.GetRandomId(sqlDB, definitions.CARBS, conditions, maxId)
 			case j == 1:
-				cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.PROTEINS))
+				maxId := db.GetMaxId(sqlDB, definitions.PROTEINS)
+				cr[j] = db.GetRandomId(sqlDB, definitions.PROTEINS, conditions, maxId)
+				// cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.PROTEINS))
 			case j == 2:
-				cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.OILS))
+				maxId := db.GetMaxId(sqlDB, definitions.VEGETABLES)
+				cr[j] = db.GetRandomId(sqlDB, definitions.VEGETABLES, conditions, maxId)
+				// cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.VEGETABLES))
 			case j == 3:
-				cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.VEGETABLES))
+				maxId := db.GetMaxId(sqlDB, definitions.BEVERAGES)
+				cr[j] = db.GetRandomId(sqlDB, definitions.BEVERAGES, conditions, maxId)
+				// cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.BEVERAGES))
 			case j == 4:
-				cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.BEVERAGES))
-			case j == 5:
-				cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.FRUITS))
+				maxId := db.GetMaxId(sqlDB, definitions.FRUITS)
+				cr[j] = db.GetRandomId(sqlDB, definitions.FRUITS, conditions, maxId)
+				// cr[j] = util.GetRandomIngredientId(db.GetMaxId(sqlDB, definitions.FRUITS))
 			default:
 				return nil
 			}
