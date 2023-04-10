@@ -1,4 +1,4 @@
-package nsga
+package main
 
 import (
 	"database/sql"
@@ -13,8 +13,11 @@ import (
 	paretoselection "github.com/neostefan/ga-diet/operators/pareto_selection"
 )
 
-func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails {
-	// ings := db.ReadFromCsvFile()
+//! Remember to change this once done with testing...
+func Nsga(maxObj string, minObj string, conditions []definitions.DietCondition) {
+	//maxObj := definitions.PRICE
+	//healthConditions := []definitions.DietCondition{definitions.DIABETES}
+	//ings := db.ReadFromCsvFile()
 
 	sqlDb, err := sql.Open("sqlite3", "./db/meals.db")
 
@@ -25,7 +28,7 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 	// db.ShiftToDb(ings, sqlDb)
 
 	var finalIngs []definitions.IngredientDetails
-	population := operators.InitializePopulation(sqlDb)
+	population := operators.InitializePopulation(sqlDb, conditions)
 	parents := make(definitions.Generation, len(population))
 	fmt.Println("Printing the initial states...")
 
@@ -57,7 +60,6 @@ func RunAlgorithm(maxObj string, minObj string) []definitions.IngredientDetails 
 	}
 
 	defer sqlDb.Close()
-	return finalIngs
 }
 
 func printChromosome(g definitions.Generation) {
