@@ -13,8 +13,8 @@ import (
 	paretoselection "github.com/neostefan/ga-diet/operators/pareto_selection"
 )
 
-//! Remember to change this once done with testing...
-func Nsga(maxObj string, minObj string, conditions []definitions.DietCondition) {
+// ! Remember to change this once done with testing...
+func Nsga(maxObj string, minObj string, conditions []definitions.DietCondition) []definitions.IngredientDetails {
 	//maxObj := definitions.PRICE
 	//healthConditions := []definitions.DietCondition{definitions.DIABETES}
 	//ings := db.ReadFromCsvFile()
@@ -60,6 +60,8 @@ func Nsga(maxObj string, minObj string, conditions []definitions.DietCondition) 
 	}
 
 	defer sqlDb.Close()
+
+	return finalIngs
 }
 
 func printChromosome(g definitions.Generation) {
