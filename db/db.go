@@ -465,90 +465,99 @@ func GetRandomId(db *sql.DB, t definitions.IngredientType, conditions []definiti
 	var randId int
 	var err error
 
-	for _, cond := range conditions {
-		if cond == definitions.DIABETES {
-			dbc := definitions.DiabetesConstraint()
+	if len(conditions) == 0 {
+		if t == definitions.CARBS {
+			err = db.QueryRow(`SELECT Id FROM carbs ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+		}
 
-			if t == definitions.CARBS {
-				err = db.QueryRow(`SELECT Id FROM carbs WHERE FoodGroup = ? ORDER BY random() * (SELECT MAX(Id) FROM carbs) LIMIT 1`, dbc.FGClassification, maxId).Scan(&randId)
-			}
+		if t == definitions.PROTEINS {
+			err = db.QueryRow(`SELECT Id FROM proteins ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+		}
 
-			fmt.Println(randId)
+		// if t == definitions.OILS {
+		// 	err = db.QueryRow(`SELECT Id FROM oils ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
+		// }
 
-			if t == definitions.PROTEINS {
-				err = db.QueryRow(`SELECT Id FROM proteins ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
-			}
+		if t == definitions.VEGETABLES {
+			err = db.QueryRow(`SELECT Id FROM vegetables ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+		}
 
-			// if t == definitions.OILS {
-			// 	err = db.QueryRow(`SELECT Id FROM oils ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
-			// }
+		if t == definitions.BEVERAGES {
+			err = db.QueryRow(`SELECT Id FROM beverages ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+		}
 
-			if t == definitions.VEGETABLES {
-				err = db.QueryRow(`SELECT Id FROM vegetables ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
-			}
+		if t == definitions.FRUITS {
+			err = db.QueryRow(`SELECT Id FROM fruits ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+		}
 
-			if t == definitions.BEVERAGES {
-				err = db.QueryRow(`SELECT Id FROM beverages ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
-			}
+		if err != nil {
+			fmt.Printf("Error occurred! err value: %v", err)
+		}
+	} else {
+		for _, cond := range conditions {
+			if cond == definitions.DIABETES {
+				dbc := definitions.DiabetesConstraint()
 
-			if t == definitions.FRUITS {
-				err = db.QueryRow(`SELECT Id FROM fruits ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
-			}
+				if t == definitions.CARBS {
+					err = db.QueryRow(`SELECT Id FROM carbs WHERE FoodGroup = ? ORDER BY random() * ? LIMIT 1`, dbc.FGClassification, maxId).Scan(&randId)
+				}
 
-		} else if cond == definitions.ULCER {
-			ulc := definitions.UlcerConstraint()
+				fmt.Println(randId)
 
-			if t == definitions.CARBS {
-				err = db.QueryRow(`SELECT Id FROM carbs WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ${maxId} * maxId LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary).Scan(&randId)
-			}
+				if t == definitions.PROTEINS {
+					err = db.QueryRow(`SELECT Id FROM proteins ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+				}
 
-			if t == definitions.PROTEINS {
-				err = db.QueryRow(`SELECT Id FROM proteins WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ${maxId} * maxId LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary).Scan(&randId)
-			}
+				// if t == definitions.OILS {
+				// 	err = db.QueryRow(`SELECT Id FROM oils ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
+				// }
 
-			// if t == definitions.OILS {
-			// 	err = db.QueryRow(`(SELECT Id FROM oils WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ${maxId} * maxId LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary).Scan(&randId)
-			// }
+				if t == definitions.VEGETABLES {
+					err = db.QueryRow(`SELECT Id FROM vegetables ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+				}
 
-			if t == definitions.VEGETABLES {
-				err = db.QueryRow(`SELECT Id FROM vegetables WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ${maxId} * maxId LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary).Scan(&randId)
-			}
+				if t == definitions.BEVERAGES {
+					err = db.QueryRow(`SELECT Id FROM beverages ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+				}
 
-			if t == definitions.BEVERAGES {
-				err = db.QueryRow(`SELECT Id FROM beverages WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ${maxId} * maxId LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary).Scan(&randId)
-			}
+				if t == definitions.FRUITS {
+					err = db.QueryRow(`SELECT Id FROM fruits ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+				}
 
-			if t == definitions.FRUITS {
-				err = db.QueryRow(`SELECT Id FROM fruits (WHERE Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ${maxId} * maxId LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary).Scan(&randId)
-			}
-		} else {
+				if err != nil {
+					fmt.Printf("Error occurred! err value: %v", err)
+				}
 
-			if t == definitions.CARBS {
-				err = db.QueryRow(`SELECT Id FROM carbs ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
-			}
+			} else if cond == definitions.ULCER {
+				ulc := definitions.UlcerConstraint()
 
-			if t == definitions.PROTEINS {
-				err = db.QueryRow(`SELECT Id FROM proteins ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
-			}
+				if t == definitions.CARBS {
+					err = db.QueryRow(`SELECT Id FROM carbs WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ? LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary, maxId).Scan(&randId)
+				}
 
-			// if t == definitions.OILS {
-			// 	err = db.QueryRow(`SELECT Id FROM oils ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
-			// }
+				if t == definitions.PROTEINS {
+					err = db.QueryRow(`SELECT Id FROM proteins WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ? LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary, maxId).Scan(&randId)
+				}
 
-			if t == definitions.VEGETABLES {
-				err = db.QueryRow(`SELECT Id FROM vegetables ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
-			}
+				// if t == definitions.OILS {
+				// 	err = db.QueryRow(`(SELECT Id FROM oils WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ${maxId} * maxId LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary).Scan(&randId)
+				// }
 
-			if t == definitions.BEVERAGES {
-				err = db.QueryRow(`SELECT Id FROM beverages ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
-			}
+				if t == definitions.VEGETABLES {
+					err = db.QueryRow(`SELECT Id FROM vegetables WHERE (Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ? LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary, maxId).Scan(&randId)
+				}
 
-			if t == definitions.FRUITS {
-				err = db.QueryRow(`SELECT Id FROM fruits ORDER BY random() * ${maxId} * maxId LIMIT 1`).Scan(&randId)
-			}
+				if t == definitions.BEVERAGES {
+					err = db.QueryRow(`SELECT Id FROM beverages ORDER BY random() * ? LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary, maxId).Scan(&randId)
+				}
 
-			if err != nil {
-				fmt.Printf("Error occurred! err value: %v", err)
+				if t == definitions.FRUITS {
+					err = db.QueryRow(`SELECT Id FROM fruits (WHERE Taste != ? AND Flavor != ? AND CullinaryMethod != ?) ORDER BY random() * ? LIMIT 1`, ulc.Taste, ulc.Flavor, ulc.Cullinary, maxId).Scan(&randId)
+				}
+
+				if err != nil {
+					fmt.Printf("Error occurred! err value: %v", err)
+				}
 			}
 		}
 	}
