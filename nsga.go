@@ -66,8 +66,9 @@ func Nsga(maxObj string, minObj string, conditions []definitions.DietCondition) 
 
 // func main() {
 // 	cond := []definitions.DietCondition{
-// 		definitions.DIABETES,
+// 		definitions.ULCER,
 // 	}
+
 // 	fmt.Printf("%v", Nsga("calories", "price", cond))
 // }
 
