@@ -64,6 +64,13 @@ func Nsga(maxObj string, minObj string, conditions []definitions.DietCondition) 
 	return finalIngs
 }
 
+// func main() {
+// 	cond := []definitions.DietCondition{
+// 		definitions.DIABETES,
+// 	}
+// 	fmt.Printf("%v", Nsga("calories", "price", cond))
+// }
+
 func printChromosome(g definitions.Generation) {
 	for _, c := range g {
 		fmt.Printf("%d \n", c)
