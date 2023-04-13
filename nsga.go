@@ -1,4 +1,4 @@
-package main
+package nsga
 
 import (
 	"database/sql"
