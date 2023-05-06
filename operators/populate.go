@@ -2,7 +2,6 @@ package operators
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/neostefan/ga-diet/db"
 	"github.com/neostefan/ga-diet/definitions"
@@ -24,7 +23,6 @@ func InitializePopulation(sqlDB *sql.DB, conditions []definitions.DietCondition)
 			switch {
 			case j == 0:
 				maxId := db.GetMaxId(sqlDB, definitions.CARBS)
-				fmt.Println("CARBS MAX ID: ", maxId)
 				cr[j] = db.GetRandomId(sqlDB, definitions.CARBS, conditions, maxId)
 			case j == 1:
 				maxId := db.GetMaxId(sqlDB, definitions.PROTEINS)

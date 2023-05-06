@@ -106,8 +106,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 		ing.Type = "carbs"
 
 		if errE != nil {
-			fmt.Println("The Id is :", id)
-			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
+			// fmt.Println("The Id is :", id)
+			// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
 		}
 
 	}
@@ -118,8 +118,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 		ing.Type = "protein"
 
 		if errE != nil {
-			fmt.Println("The Id is :", id)
-			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
+			// fmt.Println("The Id is :", id)
+			// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
 		}
 	}
 
@@ -139,8 +139,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 		ing.Type = "vegetables"
 
 		if errE != nil {
-			fmt.Println("The Id is :", id)
-			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.VEGETABLES, errE)
+			// fmt.Println("The Id is :", id)
+			// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.VEGETABLES, errE)
 		}
 
 	}
@@ -151,8 +151,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 		ing.Type = "beverages"
 
 		if errE != nil {
-			fmt.Println("The Id is :", id)
-			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.FRUITS, errE)
+			// fmt.Println("The Id is :", id)
+			// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.FRUITS, errE)
 		}
 
 	}
@@ -163,8 +163,8 @@ func GetIngredientById(id int, index int, db *sql.DB) definitions.IngredientDeta
 		ing.Type = "fruits"
 
 		if errE != nil {
-			fmt.Println("The Id is :", id)
-			fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.OILS, errE)
+			// fmt.Println("The Id is :", id)
+			// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.OILS, errE)
 		}
 	}
 
@@ -188,8 +188,8 @@ func GetObjectiveConstraintValues(db *sql.DB, c definitions.Chromosome, constrai
 			errE := db.QueryRow(`SELECT calories, cost, protein FROM carbs WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
-				fmt.Println("The Id is :", id)
-				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
+				// fmt.Println("The Id is :", id)
+				// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.CARBS, errE)
 			}
 
 			calories = append(calories, calorie)
@@ -201,8 +201,8 @@ func GetObjectiveConstraintValues(db *sql.DB, c definitions.Chromosome, constrai
 			errE := db.QueryRow(`SELECT calories, cost, protein FROM proteins WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
-				fmt.Println("The Id is :", id)
-				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
+				// fmt.Println("The Id is :", id)
+				// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
 			}
 
 			calories = append(calories, calorie)
@@ -228,8 +228,8 @@ func GetObjectiveConstraintValues(db *sql.DB, c definitions.Chromosome, constrai
 			errE := db.QueryRow(`SELECT calories, cost, protein FROM vegetables WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
-				fmt.Println("The Id is :", id)
-				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.VEGETABLES, errE)
+				// fmt.Println("The Id is :", id)
+				// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.VEGETABLES, errE)
 			}
 
 			calories = append(calories, calorie)
@@ -241,8 +241,8 @@ func GetObjectiveConstraintValues(db *sql.DB, c definitions.Chromosome, constrai
 			errE := db.QueryRow(`SELECT calories, cost, protein FROM beverages WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
-				fmt.Println("The Id is :", id)
-				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.BEVERAGES, errE)
+				// fmt.Println("The Id is :", id)
+				// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.BEVERAGES, errE)
 			}
 
 			calories = append(calories, calorie)
@@ -254,8 +254,8 @@ func GetObjectiveConstraintValues(db *sql.DB, c definitions.Chromosome, constrai
 			errE := db.QueryRow(`SELECT calories, cost, protein FROM fruits WHERE id = ?`, id).Scan(&calorie, &price, &protein)
 
 			if errE != nil {
-				fmt.Println("The Id is :", id)
-				fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
+				// fmt.Println("The Id is :", id)
+				// fmt.Printf("Error in executing query from %b, with message: %s \n", definitions.PROTEINS, errE)
 			}
 
 			calories = append(calories, calorie)
@@ -455,7 +455,7 @@ func GetMaxId(db *sql.DB, t definitions.IngredientType) int {
 	}
 
 	if err != nil {
-		fmt.Printf("Error occurred! err value: %v", err)
+		// fmt.Printf("Error occurred! err value: %v", err)
 	}
 
 	return maxId
@@ -491,7 +491,7 @@ func GetRandomId(db *sql.DB, t definitions.IngredientType, conditions []definiti
 		}
 
 		if err != nil {
-			fmt.Printf("Error occurred! err value: %v", err)
+			// fmt.Printf("Error occurred! err value: %v", err)
 		}
 	} else {
 		for _, cond := range conditions {
@@ -502,7 +502,7 @@ func GetRandomId(db *sql.DB, t definitions.IngredientType, conditions []definiti
 					err = db.QueryRow(`SELECT Id FROM carbs WHERE FoodGroup = ? ORDER BY random() * ? LIMIT 1`, dbc.FGClassification, maxId).Scan(&randId)
 				}
 
-				fmt.Println(randId)
+				// fmt.Println(randId)
 
 				if t == definitions.PROTEINS {
 					err = db.QueryRow(`SELECT Id FROM proteins ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
@@ -525,7 +525,7 @@ func GetRandomId(db *sql.DB, t definitions.IngredientType, conditions []definiti
 				}
 
 				if err != nil {
-					fmt.Printf("Error occurred! err value: %v", err)
+					// fmt.Printf("Error occurred! err value: %v", err)
 				}
 
 			} else if cond == definitions.ULCER {
@@ -556,7 +556,7 @@ func GetRandomId(db *sql.DB, t definitions.IngredientType, conditions []definiti
 				}
 
 				if err != nil {
-					fmt.Printf("Error occurred! err value: %v", err)
+					// fmt.Printf("Error occurred! err value: %v", err)
 				}
 			}
 		}

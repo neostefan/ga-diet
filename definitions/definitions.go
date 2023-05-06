@@ -54,8 +54,8 @@ const (
 
 const (
 	ChromosomeSize = 5
-	PopulationSize = 3
-	GenerationSize = 200
+	PopulationSize = 30
+	GenerationSize = 50
 )
 
 const (
@@ -90,7 +90,7 @@ type IngredientDetails struct {
 
 type MealOptions []*IngredientDetails
 
-//Chromosome contains an array of five integers
+// Chromosome contains an array of five integers
 type Chromosome [ChromosomeSize]int
 
 type Generation []Chromosome
@@ -99,7 +99,7 @@ type Ingredient map[string]*IngredientDetails
 
 type Ingredients []Ingredient
 
-//initialize an ulcer constraint
+// initialize an ulcer constraint
 func UlcerConstraint() ulcerConstraint {
 	return ulcerConstraint{
 		Taste:     "spicy", //although taste and flavor are same for situations that require multiple limits they are seperated
@@ -108,14 +108,14 @@ func UlcerConstraint() ulcerConstraint {
 	}
 }
 
-//initialize diabetic constraint
+// initialize diabetic constraint
 func DiabetesConstraint() diabetesConstraint {
 	return diabetesConstraint{
 		FGClassification: "whole",
 	}
 }
 
-//swap function swap the chromosome with it's partner based on the index specified
+// swap function swap the chromosome with it's partner based on the index specified
 func (c *Chromosome) Swap(partner *Chromosome, index int) {
 	c[index], partner[index] = partner[index], c[index]
 }
