@@ -1,4 +1,4 @@
-package main
+package nsga
 
 import (
 	"database/sql"
@@ -65,19 +65,19 @@ func Nsga(maxObj string, minObj string, conditions []definitions.DietCondition) 
 	return finalIngs, nil
 }
 
-func main() {
-	cond := []definitions.DietCondition{
-		definitions.ULCER,
-	}
+// func main() {
+// 	cond := []definitions.DietCondition{
+// 		definitions.ULCER,
+// 	}
 
-	finalIngs, err := Nsga("calories", "price", cond)
+// 	finalIngs, err := Nsga("calories", "price", cond)
 
-	if err != nil {
-		fmt.Println(err)
-	}
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
 
-	fmt.Printf("%v", finalIngs)
-}
+// 	fmt.Printf("%v", finalIngs)
+// }
 
 // func printChromosome(g definitions.Generation) {
 // 	for _, c := range g {
