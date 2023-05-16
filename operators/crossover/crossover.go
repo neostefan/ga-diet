@@ -5,7 +5,7 @@ import (
 	"github.com/neostefan/ga-diet/util"
 )
 
-//cross function performs genetic operations; crossover and mutation
+// cross function performs genetic operations; crossover and mutation
 func cross(c1, c2 *definitions.Chromosome, index int) {
 
 	endPoint := len(c1)

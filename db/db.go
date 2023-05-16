@@ -488,6 +488,7 @@ func GetRandomId(db *sql.DB, t definitions.IngredientType, conditions []definiti
 
 		if t == definitions.FRUITS {
 			err = db.QueryRow(`SELECT Id FROM fruits ORDER BY random() * ? LIMIT 1`, maxId).Scan(&randId)
+			fmt.Println("The query: ", randId)
 		}
 
 		if err != nil {
