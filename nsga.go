@@ -55,6 +55,7 @@ func Nsga(maxObj string, minObj string, conditions []definitions.DietCondition) 
 		// printChromosome(population)
 		// fmt.Println("printing the diet meal picked")
 		selectedDiet := population[0]
+		// printChromosome(population)
 
 		finalIngs = decodeChromosome(selectedDiet, sqlDb)
 		// fmt.Printf("\n The selected diet: %v", finalIngs)
@@ -89,6 +90,8 @@ func decodeChromosome(c definitions.Chromosome, sqlDB *sql.DB) []definitions.Ing
 	ings := make([]definitions.IngredientDetails, 0)
 
 	for i, ingId := range c {
+
+		// fmt.Println("Index: , Ingredient Id: ", i, ingId)
 
 		ing := db.GetIngredientById(ingId, i, sqlDB)
 
