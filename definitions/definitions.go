@@ -55,7 +55,7 @@ const (
 const (
 	ChromosomeSize = 5
 	PopulationSize = 100 //30
-	GenerationSize = 100 //50
+	GenerationSize = 200 //50
 )
 
 // OILS WAS INCLUDED HERE
